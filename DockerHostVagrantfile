@@ -9,11 +9,7 @@ Vagrant.configure(2) do |config|
     d.vm.hostname = "PROJECT_CODE-dockerhost"
     d.vm.network "private_network", ip: "DOCKER_HOST_IP"
 
-    # Uncomment below to enable nfs for faster performance.
-    #d.vm.synced_folder '.', '/vagrant', type: "nfs"
-
-    # Comment below if you are using nfs.
-    d.vm.synced_folder '.', '/vagrant'
+    d.vm.synced_folder '.', '/vagrant', owner: "www-data", group: "www-data", type: "nfs"
 
     d.vm.provider "virtualbox" do |vb|
       # You may change the cpus and memory.
