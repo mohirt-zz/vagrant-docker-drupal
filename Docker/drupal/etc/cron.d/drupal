@@ -1,0 +1,6 @@
+COLUMNS=80
+DRUSH_PHP=/usr/bin/php
+DRUSH=/usr/bin/drush
+
+# Generic drupal cron job.
+*/15 * * * * www-data $DRUSH -r /var/www/drupal cron -q -y 2>&1 > /dev/null
