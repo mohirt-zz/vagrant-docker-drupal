@@ -38,6 +38,13 @@ A fast Internet and patient, because many images will be downloaded for the firs
 
 6. When Vagrant finish provisioning (stop flooding), use a browser and visit `http://<your_project_code>.local`
 
+7. The default Drupal admin account
+
+        username: admin
+        password: test
+
+8. The installed Drupal directory is located at `./Docker/drupal/drupal`, and this folder is synced with the container. You may start your Drupal development.
+
 ## Under The Hood
 Coming soon...
 
