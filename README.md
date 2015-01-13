@@ -34,7 +34,7 @@ A fast Internet and patient, because many images will be downloaded for the firs
 
 5. While Vagrant is busying provisioning your development environment, you may change your `hosts` file if you want to access the Drupal using hostname. Something like:
 
-        <your_project_code>.local  <host_only_ip>
+        <host_only_ip> <your_project_code>.local
 
 6. When Vagrant finish provisioning (stop flooding), use a browser and visit `http://<your_project_code>.local`
 
