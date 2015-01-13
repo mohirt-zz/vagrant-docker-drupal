@@ -39,6 +39,7 @@ A fast Internet and patient, because many images will be downloaded for the firs
 6. When Vagrant finish provisioning (stop flooding), use a browser and visit `http://<your_project_code>.local`
 
 ## Under The Hood
+Coming soon...
 
 ## Coming Features
 - A nice backup strategies
