@@ -1,4 +1,6 @@
 # Vagrant Docker Drupal (VDD)
+*This project is still in the early development phase, please do not use in production environment.*
+
 A Vagrant setup that uses Docker as provider, builds Docker images and creates Docker containers for running Drupal. Fully embrace the Docker principle: One Concern per Container.
 
 ## Introduction
