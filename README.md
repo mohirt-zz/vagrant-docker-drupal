@@ -11,7 +11,7 @@ In summary, Vagrant will fire up a VM (ubuntu:14.04) and install a Docker daemon
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 - Vagrant Plugin:
   - [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest)
-  - (Windows) [vagrant-winnfsd](https://github.com/GM-Alex/vagrant-winnfsd) or similar tools to provide nfs service
+  - (Windows) [vagrant-winnfsd](https://github.com/GM-Alex/vagrant-winnfsd) or similar tools to provide `nfs` service
 
 A fast Internet and patient, because many images will be downloaded for the first time.
 
@@ -43,12 +43,59 @@ A fast Internet and patient, because many images will be downloaded for the firs
         username: admin
         password: test
 
-8. The installed Drupal directory is located at `./Docker/drupal/drupal`, and this folder is synced with the container. You may start your Drupal development.
+8. The installed Drupal directory is located at `./Docker/drupal/drupal`, and this folder is synced with the container. You may start Drupal development.
 
 ## Under The Hood
-Coming soon...
+### Docker Images and Containers
+The relationship between images and containers are shown as below:
+
+1. `<PROJECT_CODE>-data:devel`
+  - `<PROJECT_CODE>-data`
+
+2. `<PROJECT_CODE>-mysql:devel`
+  - `<PROJECT_CODE>-mysql`
+
+3. `<PROJECT_CODE>-drupal:devel`
+  - `<PROJECT_CODE>-nginx`
+  - `<PROJECT_CODE>-php-fpm`
+  - `<PROJECT_CODE>-php-cron`
+
+The `<PROJECT_CODE>-data:devel` image is used to declare three data volumes:
+- `/var/lib/mysql`
+- `/var/www/drupal/sites/default/files`
+- `/var/www/drupal/sites/default/private`
+
+And the created `<PROJECT_CODE>-data` container will be used as Data Volume Container to hold persistent data.
+
+The `<PROJECT_CODE>-mysql:devel` image was packed with MySQL-Server. The container `<PROJECT_CODE>-mysql` will mount the volume `/var/lib/mysql` from the data container.
+
+The `<PROJECT_CODE>-drupal:devel` image was built with packages like Nginx, PHP-FPM, PHP-CLI, MySQL-Client, drush and Drupal source code. Since these services will need to access the Drupal source code, and in order to reduce the steps of packing Drupal source code into multiple images, they are included into the same image. So three containers with different roles will be created and serving the Drupal site. The three containers created will mount `/var/www/drupal/sites/default/files` and `/var/www/drupal/sites/default/private` from the `<PROJECT_CODE>-data` container .
+
+### About Development
+With the use of Vagrant, the project folder is synced by `nfs` to the Docker Host VM at `/vagrant`. The three containers
+- `<PROJECT_CODE>-nginx`
+- `<PROJECT_CODE>-php-fpm`
+- `<PROJECT_CODE>-php-cron`
+
+will mount the `/vagrant/Docker/drupal/drupal` into their container as `/var/www/drupal`. Therefore you are free to use your favrouite IDE, editing the source code will directly shows the update in the containers.
+
+### About Deployment in Production
+Suppose you are using git, you may
+- do any necessary backup, like db and file assets
+- git pull the source code from your repository
+- build and tag your latest image
+- stop the current nginx, php-fpm, php-cron containers
+- create new containers from your latest image
+- run drush updatedb and clear cache if necessary
+- if anything goes wrong, you may revert the db from your backup and resume the old containers
+- otherwise, you may remove the old container and start using the latest one
+
+### Some Default Settings for Drupal
+The Drupal default 'poor man' style cron is disabled, since we have a specific container to do the background cronjob.
 
 ## Coming Features
+- Security strengthen for the containers
+- Some wrapper bash scripts to run drush inside containers
 - A nice backup strategies
 - A proper sendmail solutions for containers
 - Centralized logging
@@ -57,8 +104,21 @@ Coming soon...
 - Solr container
 
 ## FAQ
-Coming soon...
+- Q: My workstation is a linux box and I am already using Docker for my projects, I don't want to use VirtualBox, or any other VM technologies.
 
+  A: Yes, of course you can use Docker natively. Why the project requires a VirtualBox is because the synced folder location, which can be different depends on personal taste. To use native Docker, please edit the settings in `Vagrantfile`:
+
+       d.force_host_vm = false
+       d.volumes = ["<your_project_location>:/var/www/drupal"]
+
+- Q: Can I run another Drupal project in this Vagrant setup?
+
+  A: It is better to keep one Vagrant setup for one Drupal project, although the underlying technology is Docker. It is because we need to map another synced folder with the VM, and mount that folder as volumne inside containers. This might increase the complexity of your Vagrant setup.
+  
+- Q: If I want to run multiple Drupal projects in the production server, how to manage the Nginx and port 80?
+ 
+  A: You may use the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) container to do a reverse proxy for you. It will automatically update Nginx proxy once you start/stop containers.
+  
 ## Acknowledgments
 Special thanks to [António](https://github.com/perusio) for the great [Nginx config for Drupal](https://github.com/perusio/drupal-with-nginx) and [PHP-FPM config](https://github.com/perusio/php-fpm-example-config).
 
