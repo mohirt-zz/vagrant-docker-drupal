@@ -4,7 +4,7 @@ A Vagrant setup that uses Docker as provider, builds Docker images and creates D
 ## Introduction
 The project can be a boiler plate for starting a new Drupal project, or integrating existing Drupal project into Docker styles. So that developers can have more control on the application environments, and sysadmin can rest assure that the deployment can go smoothly.
 
-In summary, Vagrant will fire up a Docker host VM (ubuntu:14.04)  and install a Docker daemon. Base image (ubuntu:14.04) will be used, and system services like Nginx, PHP-FPM, MySQL will be running inside container. A [Data Volume Container](https://docs.docker.com/userguide/dockervolumes/) will be created to hold persistent data.
+In summary, Vagrant will fire up a VM (ubuntu:14.04) and install a Docker daemon. Docker base image (ubuntu:14.04) will be used, and system services like Nginx, PHP-FPM, MySQL will be running inside container. A [Data Volume Container](https://docs.docker.com/userguide/dockervolumes/) will be created to hold persistent data.
 
 ## Prerequisite
 - [Vagrant](https://www.vagrantup.com/downloads.html) >= v1.6.0
