@@ -113,7 +113,7 @@ The Drupal default 'poor man' style cron is disabled, since we have a specific c
 
 - Q: Can I run another Drupal project in this Vagrant setup?
 
-  A: It is better to keep one Vagrant setup for one Drupal project, although the underlying technology is Docker. It is because we need to map another folder synced with the VM, and mount the volumne inside containers, and this might increase the complexity of your Vagrant setup.
+  A: It is better to keep one Vagrant setup for one Drupal project, although the underlying technology is Docker. It is because we need to map another synced folder with the VM, and mount that folder as volumne inside containers. This might increase the complexity of your Vagrant setup.
   
 - Q: If I want to run multiple Drupal projects in the production server, how to manage the Nginx and port 80?
  
