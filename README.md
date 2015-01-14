@@ -109,16 +109,16 @@ The Drupal default 'poor man' style cron is disabled, since we have a specific c
   A: Yes, of course you can use Docker natively. Why the project requires a VirtualBox is because the synced folder location, which can be different depends on personal taste. To use native Docker, please edit the settings in `Vagrantfile`:
 
        d.force_host_vm = false
-       d.volumes = ["<your_project_location>:/var/www/drupal"]
+       d.volumes = ["<your_project_location>/Docker/drupal/drupal:/var/www/drupal"]
 
 - Q: Can I run another Drupal project in this Vagrant setup?
 
   A: It is better to keep one Vagrant setup for one Drupal project, although the underlying technology is Docker. It is because we need to map another synced folder with the VM, and mount that folder as volumne inside containers. This might increase the complexity of your Vagrant setup.
-  
+
 - Q: If I want to run multiple Drupal projects in the production server, how to manage the Nginx and port 80?
- 
+
   A: You may use the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) container to do a reverse proxy for you. It will automatically update Nginx proxy once you start/stop containers.
-  
+
 ## Acknowledgments
 Special thanks to [António](https://github.com/perusio) for the great [Nginx config for Drupal](https://github.com/perusio/drupal-with-nginx) and [PHP-FPM config](https://github.com/perusio/php-fpm-example-config).
 
