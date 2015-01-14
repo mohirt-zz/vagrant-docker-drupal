@@ -43,11 +43,12 @@ A fast Internet and patient, because many images will be downloaded for the firs
         username: admin
         password: test
 
-8. The installed Drupal directory is located at `./Docker/drupal/drupal`, and this folder is synced with the container. You may start your Drupal development.
+8. The installed Drupal directory is located at `./Docker/drupal/drupal`, and this folder is synced with the container. You may start Drupal development.
 
 ## Under The Hood
 ### Docker Images and Containers
 The relationship between images and containers are shown as below:
+
 1. `<PROJECT_CODE>-data:devel`
   - `<PROJECT_CODE>-data`
 
@@ -90,9 +91,11 @@ Suppose you are using git, you may
 - otherwise, you may remove the old container and start using the latest one
 
 ### Some Default Settings for Drupal
-The Drupal default 'poor man' style cron is disabled, since we have a specific container to the background cronjob.
+The Drupal default 'poor man' style cron is disabled, since we have a specific container to do the background cronjob.
 
 ## Coming Features
+- Security strengthen for the containers
+- Some wrapper bash scripts to run drush inside containers
 - A nice backup strategies
 - A proper sendmail solutions for containers
 - Centralized logging
@@ -102,11 +105,12 @@ The Drupal default 'poor man' style cron is disabled, since we have a specific c
 
 ## FAQ
 - Q: My workstation is a linux box and I am already using Docker for my projects, I don't want to use VirtualBox, or any other VM technologies.
+
   A: Yes, of course you can use Docker natively. Why the project requires a VirtualBox is because the synced folder location, which can be different depends on personal taste. To use native Docker, please edit the settings in `Vagrantfile`:
 
        d.force_host_vm = false
        d.volumes = ["<your_project_location>:/var/www/drupal"]
-
+  
 ## Acknowledgments
 Special thanks to [António](https://github.com/perusio) for the great [Nginx config for Drupal](https://github.com/perusio/drupal-with-nginx) and [PHP-FPM config](https://github.com/perusio/php-fpm-example-config).
 
