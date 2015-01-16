@@ -55,6 +55,7 @@ RUN chown -R root:root /var/www/drupal && chmod -R o= /var/www/drupal
 # Remove unnecesary cron jobs, we only want Drupal and php cronjobs.
 RUN rm -f /etc/cron.*/*
 COPY etc/cron.d /etc/cron.d/
+RUN chmod a+x /etc/cron.d/*
 
 COPY entrypoint.sh /
 RUN chmod a+x /entrypoint.sh
