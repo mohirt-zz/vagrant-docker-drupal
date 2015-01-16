@@ -51,9 +51,10 @@ COPY etc/php5/fpm /etc/php5/fpm/
 RUN rm -rf /var/www/drupal/*
 COPY drupal /var/www/drupal/
 RUN chown -R root:root /var/www/drupal && chmod -R o= /var/www/drupal
-# Drupal cronjob.
-RUN rm -f /etc/cron.d/drupal
-COPY etc/cron.d/drupal /etc/cron.d/
+
+# Remove unnecesary cron jobs, we only want Drupal and php cronjobs.
+RUN rm -f /etc/cron.*/*
+COPY etc/cron.d /etc/cron.d/
 
 COPY entrypoint.sh /
 RUN chmod a+x /entrypoint.sh
