@@ -51,27 +51,32 @@ A fast Internet and patient, because many images will be downloaded for the firs
 ### Docker Images and Containers
 The relationship between images and containers are shown as below:
 
-1. `<PROJECT_CODE>-data:devel`
-  - `<PROJECT_CODE>-data`
+1. `<PROJECT_CODE>-data-file:devel`
+  - `<PROJECT_CODE>-data-file`
 
-2. `<PROJECT_CODE>-mysql:devel`
+2. `<PROJECT_CODE>-data-sql:devel`
+  - `<PROJECT_CODE>-data-sql`
+
+3. `<PROJECT_CODE>-mysql:devel`
   - `<PROJECT_CODE>-mysql`
 
-3. `<PROJECT_CODE>-drupal:devel`
+4. `<PROJECT_CODE>-drupal:devel`
   - `<PROJECT_CODE>-nginx`
   - `<PROJECT_CODE>-php-fpm`
   - `<PROJECT_CODE>-php-cron`
 
-The `<PROJECT_CODE>-data:devel` image is used to declare three data volumes:
-- `/var/lib/mysql`
+The `<PROJECT_CODE>-data-file:devel` image declares two volumes:
 - `/var/www/drupal/sites/default/files`
 - `/var/www/drupal/sites/default/private`
 
-And the created `<PROJECT_CODE>-data` container will be used as Data Volume Container to hold persistent data.
+The `<PROJECT_CODE>-data-sql:devel` image declares one volume:
+- `/var/lib/mysql`
 
-The `<PROJECT_CODE>-mysql:devel` image was packed with MySQL-Server. The container `<PROJECT_CODE>-mysql` will mount the volume `/var/lib/mysql` from the data container.
+And the created `<PROJECT_CODE>-data-file` and `<PROJECT_CODE>-data-sql`container will be used as Data Volume Container to hold persistent data.
 
-The `<PROJECT_CODE>-drupal:devel` image was built with packages like Nginx, PHP-FPM, PHP-CLI, MySQL-Client, drush and Drupal source code. Since these services will need to access the Drupal source code, and in order to reduce the steps of packing Drupal source code into multiple images, they are included into the same image. So three containers with different roles will be created and serving the Drupal site. The three containers created will mount `/var/www/drupal/sites/default/files` and `/var/www/drupal/sites/default/private` from the `<PROJECT_CODE>-data` container .
+The `<PROJECT_CODE>-mysql:devel` image was packed with MySQL-Server. The container `<PROJECT_CODE>-mysql` will mount the volume `/var/lib/mysql` from the `<PROJECT_CODE>-data-sql` data container.
+
+The `<PROJECT_CODE>-drupal:devel` image was built with packages like Nginx, PHP-FPM, PHP-CLI, MySQL-Client, drush and Drupal source code. Since these services will need to access the Drupal source code, and in order to reduce the steps of packing Drupal source code into multiple images, they are included into the same image. So three containers with different roles will be created and serving the Drupal site. The three containers created will mount `/var/www/drupal/sites/default/files` and `/var/www/drupal/sites/default/private` from the `<PROJECT_CODE>-data-file` container.
 
 ### About Development
 With the use of Vagrant, the project folder is synced by `nfs` to the Docker Host VM at `/vagrant`. The three containers
@@ -79,7 +84,9 @@ With the use of Vagrant, the project folder is synced by `nfs` to the Docker Hos
 - `<PROJECT_CODE>-php-fpm`
 - `<PROJECT_CODE>-php-cron`
 
-will mount the `/vagrant/Docker/drupal/drupal` into their container as `/var/www/drupal`. Therefore you are free to use your favrouite IDE, editing the source code will directly shows the update in the containers.
+will mount the `/vagrant/Docker/drupal/drupal` into their container as `/var/www/drupal`. Therefore you are free to use your favrouite IDE, and editing the source code will directly shows the update in the containers.
+
+Vagrant will default run the php-fpm with a php.ini-devel, which reports verbose error to assist development.
 
 ### About Deployment in Production
 Suppose you are using git, you may
@@ -96,11 +103,10 @@ Suppose you are using git, you may
 The Drupal default 'poor man' style cron is disabled, since we have a specific container to do the background cronjob.
 
 ## Coming Features
-- Security strengthen for the containers
-- Some wrapper bash scripts to run drush inside containers
-- A nice backup strategies
-- A proper sendmail solutions for containers
 - Centralized logging
+- A proper sendmail solutions for containers
+- Some shortcuts to interact with container, e.g. using drush commands
+- A nice backup strategies
 - Memcache container
 - Varnish container
 - Solr container

@@ -3,6 +3,11 @@
 
 Vagrant.configure(2) do |config|
   config.vm.define "PROJECT_CODE_dockerhost" do |d|
+    # Use vagrant-cachier to accelerate development.
+    if Vagrant.has_plugin?("vagrant-cachier")
+      d.cache.scope = :box
+    end
+
     d.vm.box = "ubuntu/trusty64"
     d.vm.provision "docker"
 
@@ -13,11 +18,18 @@ Vagrant.configure(2) do |config|
 
     d.vm.provider "virtualbox" do |vb|
       # You may change the cpus and memory.
+      vb.name = "PROJECT_CODE-dockerhost"
       vb.cpus = 4
       vb.memory = "2048"
     end
 
-    d.vm.provision "shell", inline:
-      "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+$script = <<SCRIPT
+ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
+echo 'DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 --iptables=true --icc=false"' >> /etc/default/docker
+service docker restart
+SCRIPT
+
+    d.vm.provision "shell", inline: $script
   end
+
 end

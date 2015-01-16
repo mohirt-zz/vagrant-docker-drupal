@@ -1,18 +1,32 @@
-#!/bin/bash
+#! /bin/bash
 set -e
 
 # Initiate DB if not intalled.
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-  mysql_install_db --user=mysql --ldata=/var/lib/mysql/
+  # Only mysql is allowed to visit her own directory.
   chown -R mysql:mysql /var/lib/mysql
+  chmod -R o= /var/lib/mysql
+
+  # Generate random root password.
+  root_password=$(date +%s | sha256sum | base64 | head -c 32)
+  # Store the password at the persistent storage so that sysadmin can retrieve.
+  echo $root_password > /var/lib/mysql/secret.txt
+  chown root:root /var/lib/mysql/secret.txt
+  chmod u=r,go= /var/lib/mysql/secret.txt
+
+  mysql_install_db --user=mysql --ldata=/var/lib/mysql/
 
   # Reference:
   # https://github.com/docker-library/mysql/blob/master/5.5/docker-entrypoint.sh
   tempSqlFile='/tmp/mysql-first-time.sql'
   cat > "$tempSqlFile" <<-EOSQL
-  CREATE USER 'root'@'%' IDENTIFIED BY '' ;
+  DELETE FROM mysql.user ;
+  CREATE USER 'root'@'%' IDENTIFIED BY '${root_password}' ;
   GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
   DROP DATABASE IF EXISTS test ;
+  CREATE DATABASE IF NOT EXISTS \`PROJECT_CODE\` ;
+  CREATE USER 'PROJECT_CODE'@'%' IDENTIFIED BY '' ;
+  GRANT ALL ON \`PROJECT_CODE\`.* TO 'PROJECT_CODE'@'%' ;
 EOSQL
   echo 'FLUSH PRIVILEGES ;' >> "$tempSqlFile"
 
