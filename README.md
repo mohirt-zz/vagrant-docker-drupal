@@ -99,6 +99,9 @@ Suppose you are using git, you may
 - if anything goes wrong, you may revert the db from your backup and resume the old containers
 - otherwise, you may remove the old container and start using the latest one
 
+### Security Concerns
+Since Docker by default, allowing [inter-container-connections](https://docs.docker.com/articles/networking/#communication-between-containers) without restrictions. For security reasons, please modify `/etc/default/docker` and add `--iptables=true --icc=false` to the `DOCKER_OPTS` variable. After restarting docker, docker will default `DROP` packets in the forward chain and adding `ACCEPT` entries when using `--link` during `docker run`.
+
 ### Some Default Settings for Drupal
 The Drupal default 'poor man' style cron is disabled, since we have a specific container to do the background cronjob.
 
