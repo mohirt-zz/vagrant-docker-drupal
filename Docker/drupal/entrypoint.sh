@@ -12,7 +12,7 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
 
   cd /var/www/drupal && drush si -y \
     standard install_configure_form.update_status_module='array(FALSE,FALSE)' \
-    --db-url=mysql://root@db/PROJECT_CODE \
+    --db-url=mysql://PROJECT_CODE@db/PROJECT_CODE \
     --account-name=admin \
     --account-pass=test \
     --site-name=PROJECT_CODE
@@ -41,6 +41,9 @@ fi
 
 # Cron.
 if [ "$1" = 'cron' ]; then
+  # Sleep before running cron for 30 mins,
+  # in case it crashes the DB during DB install or import.
+  sleep 1800
   exec cron -f
 fi
 
