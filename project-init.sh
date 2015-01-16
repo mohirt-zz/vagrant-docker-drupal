@@ -9,7 +9,7 @@
 # - Docker image name prefix
 # - Docker container name prefix
 # - Drupal database name
-# It is suggested to use only one short alphanumeric word without special characters, e.g. foobar.
+# It is suggested to use only one short alphanumeric word without special characters, e.g. foo or bar or bax, you name it.
 PROJECT_CODE=vdd
 
 # The IP that will be assigned to the DockerHost VM, host-only IP.
