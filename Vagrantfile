@@ -5,8 +5,8 @@ Vagrant.require_version ">= 1.6"
 
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
-DOCKER_HOST_NAME = "PROJECT_CODE_dockerhost"
-DOCKER_HOST_VAGRANTFILE = "./DockerHostVagrantfile"
+docker_host_name = "PROJECT_CODE_dockerhost"
+docker_host_vagrantfile = "./DockerHostVagrantfile"
 
 # We need vagrant-vbguest.
 unless Vagrant.has_plugin?("vagrant-vbguest")
@@ -27,8 +27,8 @@ Vagrant.configure(2) do |config|
       d.name = "PROJECT_CODE-data"
       d.remains_running = false
 
-      d.vagrant_machine = "#{DOCKER_HOST_NAME}"
-      d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
       d.force_host_vm = true
     end
   end
@@ -43,8 +43,8 @@ Vagrant.configure(2) do |config|
       d.create_args = ["--volumes-from", "PROJECT_CODE-data"]
       d.remains_running = true
 
-      d.vagrant_machine = "#{DOCKER_HOST_NAME}"
-      d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
       d.force_host_vm = true
     end
   end
@@ -64,8 +64,8 @@ Vagrant.configure(2) do |config|
       d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal"]
       d.remains_running = true
 
-      d.vagrant_machine = "#{DOCKER_HOST_NAME}"
-      d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
       d.force_host_vm = true
     end
   end
@@ -84,8 +84,8 @@ Vagrant.configure(2) do |config|
       d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal"]
       d.remains_running = true
 
-      d.vagrant_machine = "#{DOCKER_HOST_NAME}"
-      d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
       d.force_host_vm = true
     end
   end
@@ -105,8 +105,8 @@ Vagrant.configure(2) do |config|
       d.remains_running = true
       d.ports = ["80:80"]
 
-      d.vagrant_machine = "#{DOCKER_HOST_NAME}"
-      d.vagrant_vagrantfile = "#{DOCKER_HOST_VAGRANTFILE}"
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
       d.force_host_vm = true
     end
   end
