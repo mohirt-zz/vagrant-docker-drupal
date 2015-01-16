@@ -96,11 +96,11 @@ Suppose you are using git, you may
 The Drupal default 'poor man' style cron is disabled, since we have a specific container to do the background cronjob.
 
 ## Coming Features
-- Security strengthen for the containers
-- Some wrapper bash scripts to run drush inside containers
-- A nice backup strategies
-- A proper sendmail solutions for containers
+- Security hardening for the containers
 - Centralized logging
+- A proper sendmail solutions for containers
+- Some shortcuts to interact with container, e.g. using drush commands
+- A nice backup strategies
 - Memcache container
 - Varnish container
 - Solr container
