@@ -23,17 +23,21 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
   echo -e "\n\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/drupal/sites/default/settings.php
   chmod a-w /var/www/drupal/sites/default/settings.php
   # Remove default poor man cron.
-  drush -r /var/www/drupal vset cron_safe_threshold 0
+  drush -r /var/www/drupal vset cron_safe_threshold -y 0
   # Organize modules into subdirectories.
   mkdir -p /var/www/drupal/sites/all/modules/contrib
   mkdir -p /var/www/drupal/sites/all/modules/custom
+  # Set syslog variables
+  drush -r /var/www/drupal en -y syslog
+  drush -r /var/www/drupal vset syslog_facility -y '176'
+  drush -r /var/www/drupal vset syslog_format -y '!base_url|!timestamp|!type|!ip|!request_uri|!referer|!uid|!link|!message'
+  drush -r /var/www/drupal vset syslog_identity -y 'PROJECT_CODE'
+  # Set permission for Drupal directories.
+  chown -R root:root /var/www/drupal
+  chown -R www-data:www-data /var/www/drupal/sites/default/files
+  chown -R www-data:www-data /var/www/drupal/sites/default/private
+  chmod -R o= /var/www/drupal
 fi
-
-# Set permission for Drupal directories.
-chown -R root:root /var/www/drupal
-chown -R www-data:www-data /var/www/drupal/sites/default/files
-chown -R www-data:www-data /var/www/drupal/sites/default/private
-chmod -R o= /var/www/drupal
 
 # Nginx.
 if [ "$1" = 'nginx' ]; then
