@@ -28,10 +28,10 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
   mkdir -p /var/www/drupal/sites/all/modules/contrib
   mkdir -p /var/www/drupal/sites/all/modules/custom
   # Set syslog variables
-  drush -r /var/www/drupal en -y syslog
   drush -r /var/www/drupal vset syslog_facility -y '176'
   drush -r /var/www/drupal vset syslog_format -y '!base_url|!timestamp|!type|!ip|!request_uri|!referer|!uid|!link|!message'
   drush -r /var/www/drupal vset syslog_identity -y 'PROJECT_CODE'
+  drush -r /var/www/drupal en -y syslog
   # Set permission for Drupal directories.
   chown -R root:root /var/www/drupal
   chown -R www-data:www-data /var/www/drupal/sites/default/files
