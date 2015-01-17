@@ -17,12 +17,7 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
     --account-pass=test \
     --site-name=PROJECT_CODE
 
-  chown -R root:root /var/www/drupal
-  chown -R www-data:www-data /var/www/drupal/sites/default/files
-  chown -R www-data:www-data /var/www/drupal/sites/default/private
-  chmod -R o= /var/www/drupal
-
-  # Some minor tweak.
+  # Some minor tweaks for default Drupal install.
   # Remove http request fail notice.
   chmod a+w /var/www/drupal/sites/default/settings.php
   echo -e "\n\$conf['drupal_http_request_fails'] = FALSE;" >> /var/www/drupal/sites/default/settings.php
@@ -33,6 +28,12 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
   mkdir -p /var/www/drupal/sites/all/modules/contrib
   mkdir -p /var/www/drupal/sites/all/modules/custom
 fi
+
+# Set permission for Drupal directories.
+chown -R root:root /var/www/drupal
+chown -R www-data:www-data /var/www/drupal/sites/default/files
+chown -R www-data:www-data /var/www/drupal/sites/default/private
+chmod -R o= /var/www/drupal
 
 # Nginx.
 if [ "$1" = 'nginx' ]; then
