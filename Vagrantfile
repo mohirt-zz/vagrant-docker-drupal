@@ -18,8 +18,24 @@ unless Vagrant.has_plugin?("vagrant-vbguest")
 end
 
 Vagrant.configure(2) do |config|
-  # File Data container.
-  config.vm.define "data-file" do |data|
+  # Syslog container.
+  config.vm.define "syslog" do |syslog|
+    syslog.vm.provider "docker" do |d|
+      d.build_dir = "./Docker/syslog"
+      d.build_args = ["-t=syslog:devel"]
+
+      d.name = "syslog"
+      d.volumes = ["/tmp/syslog/dev:/dev"]
+      d.remains_running = true
+
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
+      d.force_host_vm = true
+    end
+  end
+
+  # Data file container.
+  config.vm.define "PROJECT_CODE-data-file" do |data|
     data.vm.provider "docker" do |d|
       d.build_dir = "./Docker/data-file"
       d.build_args = ["-t=PROJECT_CODE-data-file:devel"]
@@ -32,8 +48,8 @@ Vagrant.configure(2) do |config|
       d.force_host_vm = true
     end
   end
-  # SQL Data container.
-  config.vm.define "data-sql" do |data|
+  # Data SQL container.
+  config.vm.define "PROJECT_CODE-data-sql" do |data|
     data.vm.provider "docker" do |d|
       d.build_dir = "./Docker/data-sql"
       d.build_args = ["-t=PROJECT_CODE-data-sql:devel"]
@@ -48,12 +64,13 @@ Vagrant.configure(2) do |config|
   end
 
   # Mysql Server.
-  config.vm.define "mysql" do |m|
+  config.vm.define "PROJECT_CODE-mysql" do |m|
     m.vm.provider "docker" do |d|
       d.build_dir = "./Docker/mysql"
       d.build_args = ["-t=PROJECT_CODE-mysql:devel"]
 
       d.name = "PROJECT_CODE-mysql"
+      d.volumes = ["/tmp/syslog/dev/log:/dev/log"]
       d.create_args = ["--volumes-from", "PROJECT_CODE-data-sql"]
       d.remains_running = true
 
@@ -64,7 +81,7 @@ Vagrant.configure(2) do |config|
   end
 
   # PHP-FPM.
-  config.vm.define "php-fpm" do |f|
+  config.vm.define "PROJECT_CODE-php-fpm" do |f|
     f.vm.provider "docker" do |d|
       d.build_dir = "./Docker/drupal"
       d.build_args = ["-t=PROJECT_CODE-drupal:devel"]
@@ -75,7 +92,7 @@ Vagrant.configure(2) do |config|
       d.link("PROJECT_CODE-mysql:db")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
       d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
@@ -85,9 +102,10 @@ Vagrant.configure(2) do |config|
   end
 
   # PHP Cron.
-  config.vm.define "php-cron" do |c|
+  config.vm.define "PROJECT_CODE-php-cron" do |c|
     c.vm.provider "docker" do |d|
-      d.image = "PROJECT_CODE-drupal:devel"
+      d.build_dir = "./Docker/drupal"
+      d.build_args = ["-t=PROJECT_CODE-drupal:devel"]
 
       d.name = "PROJECT_CODE-php-cron"
       d.cmd = ["cron"]
@@ -95,7 +113,7 @@ Vagrant.configure(2) do |config|
       d.link("PROJECT_CODE-mysql:db")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
       d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
@@ -105,9 +123,10 @@ Vagrant.configure(2) do |config|
   end
 
   # Nginx
-  config.vm.define "nginx" do |n|
+  config.vm.define "PROJECT_CODE-nginx" do |n|
     n.vm.provider "docker" do |d|
-      d.image = "PROJECT_CODE-drupal:devel"
+      d.build_dir = "./Docker/drupal"
+      d.build_args = ["-t=PROJECT_CODE-drupal:devel"]
 
       d.name = "PROJECT_CODE-nginx"
       d.cmd = ["nginx"]
@@ -115,9 +134,25 @@ Vagrant.configure(2) do |config|
       d.link("PROJECT_CODE-php-fpm:fpm")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
       d.remains_running = true
       d.ports = ["80:80"]
+
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
+      d.force_host_vm = true
+    end
+  end
+
+  # Logrotate.
+  config.vm.define "logrotate" do |c|
+    c.vm.provider "docker" do |d|
+      d.build_dir = "./Docker/logrotate"
+      d.build_args = ["-t=logrotate:devel"]
+
+      d.name = "logrotate"
+      d.create_args = ["--volumes-from", "syslog"]
+      d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
