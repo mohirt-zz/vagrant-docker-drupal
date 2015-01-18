@@ -144,4 +144,20 @@ Vagrant.configure(2) do |config|
     end
   end
 
+  # Logrotate.
+  config.vm.define "logrotate" do |c|
+    c.vm.provider "docker" do |d|
+      d.build_dir = "./Docker/logrotate"
+      d.build_args = ["-t=logrotate:devel"]
+
+      d.name = "logrotate"
+      d.create_args = ["--volumes-from", "syslog"]
+      d.remains_running = true
+
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
+      d.force_host_vm = true
+    end
+  end
+
 end
