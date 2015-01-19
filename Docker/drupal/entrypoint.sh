@@ -15,7 +15,9 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
     --db-url=mysql://PROJECT_CODE@db/PROJECT_CODE \
     --account-name=admin \
     --account-pass=test \
-    --site-name=PROJECT_CODE
+    --account-mail="admin@mail.localdomain" \
+    --site-name=PROJECT_CODE \
+    --site-mail="PROJECT_CODE@mail.localdomain"
 
   # Some minor tweaks for default Drupal install.
   # Remove http request fail notice.
@@ -32,6 +34,15 @@ if [ ! -f /var/www/drupal/sites/default/settings.php ]; then
   drush -r /var/www/drupal vset syslog_format -y '!base_url|!timestamp|!type|!ip|!request_uri|!referer|!uid|!link|!message'
   drush -r /var/www/drupal vset syslog_identity -y 'PROJECT_CODE'
   drush -r /var/www/drupal en -y syslog
+  # Download smtp module and set variables.
+  drush -r /var/www/drupal vset smtp_host -y 'exim'
+  drush -r /var/www/drupal vset smtp_port -y '25'
+  drush -r /var/www/drupal vset smtp_allowhtml -y 1
+  drush -r /var/www/drupal vset smtp_protocol -y 'standard'
+  drush -r /var/www/drupal dl smtp
+  drush -r /var/www/drupal en -y smtp
+  # Download devel module.
+  drush -r /var/www/drupal dl devel
   # Set permission for Drupal directories.
   chown -R root:root /var/www/drupal
   chown -R www-data:www-data /var/www/drupal/sites/default/files
