@@ -1,0 +1,10 @@
+/var/log/exim4/mail.log /var/log/exim4/mail.err{
+	rotate 10
+	daily
+	missingok
+	notifempty
+	compress
+	delaycompress
+  dateext
+  copytruncate
+}

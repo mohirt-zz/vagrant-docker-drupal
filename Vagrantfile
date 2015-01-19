@@ -26,7 +26,34 @@ Vagrant.configure(2) do |config|
 
       d.name = "syslog"
       d.volumes = ["/tmp/syslog/dev:/dev"]
-      d.remains_running = true
+
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
+      d.force_host_vm = true
+    end
+  end
+  # Logrotate.
+  config.vm.define "logrotate" do |c|
+    c.vm.provider "docker" do |d|
+      d.build_dir = "./Docker/logrotate"
+      d.build_args = ["-t=logrotate:devel"]
+
+      d.name = "logrotate"
+      d.create_args = ["--volumes-from", "syslog"]
+
+      d.vagrant_machine = "#{docker_host_name}"
+      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
+      d.force_host_vm = true
+    end
+  end
+  # Exim container.
+  config.vm.define "exim" do |exim|
+    exim.vm.provider "docker" do |d|
+      d.build_dir = "./Docker/exim"
+      d.build_args = ["-t=exim:devel"]
+
+      d.name = "exim"
+      d.volumes = ["/tmp/syslog/dev/log:/dev/log"]
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -72,7 +99,6 @@ Vagrant.configure(2) do |config|
       d.name = "PROJECT_CODE-mysql"
       d.volumes = ["/tmp/syslog/dev/log:/dev/log"]
       d.create_args = ["--volumes-from", "PROJECT_CODE-data-sql"]
-      d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -90,10 +116,10 @@ Vagrant.configure(2) do |config|
       d.cmd = ["fpm", "devel"]
       d.create_args = ["--volumes-from", "PROJECT_CODE-data-file"]
       d.link("PROJECT_CODE-mysql:db")
+      d.link("exim:exim")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
       d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
-      d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -111,10 +137,10 @@ Vagrant.configure(2) do |config|
       d.cmd = ["cron"]
       d.create_args = ["--volumes-from", "PROJECT_CODE-data-file"]
       d.link("PROJECT_CODE-mysql:db")
+      d.link("exim:exim")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
       d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
-      d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -135,24 +161,7 @@ Vagrant.configure(2) do |config|
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
       d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
-      d.remains_running = true
       d.ports = ["80:80"]
-
-      d.vagrant_machine = "#{docker_host_name}"
-      d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
-      d.force_host_vm = true
-    end
-  end
-
-  # Logrotate.
-  config.vm.define "logrotate" do |c|
-    c.vm.provider "docker" do |d|
-      d.build_dir = "./Docker/logrotate"
-      d.build_args = ["-t=logrotate:devel"]
-
-      d.name = "logrotate"
-      d.create_args = ["--volumes-from", "syslog"]
-      d.remains_running = true
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"

@@ -1,0 +1,4 @@
+catchall_localdomain:
+   driver = redirect
+   domains = mail.localdomain
+   data = root@mail.localdomain

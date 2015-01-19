@@ -1,6 +1,4 @@
 # Vagrant Docker Drupal (VDD)
-*This project is still in the early development phase, please do not use in production environment.*
-
 A Vagrant setup that uses Docker as provider, builds Docker images and creates Docker containers for running Drupal. Fully embrace the Docker principle: One Concern per Container.
 
 ## Introduction
@@ -56,24 +54,29 @@ The relationship between images and containers are shown as below:
 1. `syslog:devel`
   - `syslog`
 
-2. `<PROJECT_CODE>-data-file:devel`
+2. `logrotate:devel`
+  - `logrotate`
+
+3. `exim:devel`
+  - `exim`
+
+4. `<PROJECT_CODE>-data-file:devel`
   - `<PROJECT_CODE>-data-file`
 
-3. `<PROJECT_CODE>-data-sql:devel`
+5. `<PROJECT_CODE>-data-sql:devel`
   - `<PROJECT_CODE>-data-sql`
 
-4. `<PROJECT_CODE>-mysql:devel`
+6. `<PROJECT_CODE>-mysql:devel`
   - `<PROJECT_CODE>-mysql`
 
-5. `<PROJECT_CODE>-drupal:devel`
+7. `<PROJECT_CODE>-drupal:devel`
   - `<PROJECT_CODE>-php-fpm`
   - `<PROJECT_CODE>-nginx`
   - `<PROJECT_CODE>-php-cron`
 
-6. `logrotate:devel`
-  - `logrotate`
-
 The `syslog:devel` image was bundled with `rsyslod` and some custom configs for managing Drupal and Nginx logs.  `logrotate:devel` image simply provides a logrotate cronjob to rotate the logs.
+
+The `exim:devel` image was packed with `exim4-daemon-light`, and preconfigured to allow docker private ip ranges to use `SMTP`.
 
 The `<PROJECT_CODE>-data-file:devel` image declares two volumes:
 - `/var/www/drupal/sites/default/files`
@@ -98,6 +101,8 @@ will mount the `/vagrant/Docker/drupal/drupal` into their container as `/var/www
 
 Vagrant will default run the php-fpm with a php.ini-devel, which reports verbose error to assist development.
 
+When working with emails in Drupal during development, better make use of `DevelMailLog` class from [Devel](http://drupal.org/project/devel) module or [Reroute Email](https://www.drupal.org/project/reroute_email) module. Any email address ending in `@mail.localdomain` will be forwarded to the `root` account in `exim` container. You may mount the `/var/mail/mail` from `exim` container for debugging.
+
 ### About Deployment in Production
 Suppose you are using git, you may
 - do any necessary backup, like db and file assets
@@ -112,14 +117,15 @@ Suppose you are using git, you may
 ### Security Concerns
 Since Docker by default, allowing [inter-container-connections](https://docs.docker.com/articles/networking/#communication-between-containers) without restrictions. For security reasons, please modify `/etc/default/docker` and add `--iptables=true --icc=false` to the `DOCKER_OPTS` variable. After restarting docker, docker will default `DROP` packets in the forward chain and adding `ACCEPT` entries when using `--link` during `docker run`.
 
-### Some Default Settings for Drupal
+### Some Default Settings for New Drupal Installation.
 - The Drupal default 'poor man' cron is disabled, since we have a specific container to do the background cronjob.
 - Drupal core module `syslog` is enabled, and facility is being set as `local6`. Identity is set as `<PROJECT_CODE>`. Nginx's facility is set as `local7` and tag is set as `<PROJECT_CODE>` as well.
+- Drupal module [SMTP Authentication Support](https://www.drupal.org/project/smtp) is downloaded and enabled. To turn on smtp support, please go to `admin/config/system/smtp` and click `On` in the first option.
+- Devel module is also downloaded.
 
 ## Coming Features
-- A proper sendmail solutions for containers
-- Some shortcuts to interact with container, e.g. using drush commands
-- A nice backup strategies
+- Some shortcuts to interact with containers, e.g. using drush commands
+- A nice backup strategy
 - Memcache container
 - Varnish container
 - Solr container
@@ -130,7 +136,7 @@ Since Docker by default, allowing [inter-container-connections](https://docs.doc
   A: Yes, of course you can use Docker natively. Why the project requires a VirtualBox is because the synced folder location, which can be different depends on personal taste. To use native Docker, please edit the settings in `Vagrantfile`:
 
        d.force_host_vm = false
-       d.volumes = ["<your_project_location>/Docker/drupal/drupal:/var/www/drupal"]
+       d.volumes = ["<project_location>/Docker/drupal/drupal:/var/www/drupal"]
 
 - Q: Can I run another Drupal project in this Vagrant setup?
 
@@ -139,6 +145,20 @@ Since Docker by default, allowing [inter-container-connections](https://docs.doc
 - Q: If I want to run multiple Drupal projects in the production server, how to manage the Nginx and port 80?
 
   A: You may use the [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) container to do a reverse proxy for you. It will automatically update Nginx proxy once you start/stop containers.
+
+- Q: Why sometimes `vagrant up --no-parallel` fail?
+
+  A: If you are seeing this error message:
+
+        A Docker command executed by Vagrant didn't complete successfully!
+        The command run along with the output from the command is shown
+        below.
+
+        Command: "docker" "build" "-t=exim:devel" "/mnt/docker_build_bff73e91c1e07810c0c6e278226833a0"
+
+        Stderr: time="2015-01-19T07:45:22Z" level="fatal" msg="stat /mnt/docker_build_bff73e91c1e07810c0c6e278226833a0: no such file or directory"
+
+  Check the error message, and see what it is building. In this case, it fails to build `exim`. So please run `vagrant reload exim`, and force vagrant to synced the build directory again. This is a known [bug](https://github.com/mitchellh/vagrant/issues/4775) in vagrant.
 
 ## Acknowledgments
 Special thanks to [António](https://github.com/perusio) for the great [Nginx config for Drupal](https://github.com/perusio/drupal-with-nginx) and [PHP-FPM config](https://github.com/perusio/php-fpm-example-config).
