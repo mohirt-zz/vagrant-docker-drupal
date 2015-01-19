@@ -25,7 +25,7 @@ Vagrant.configure(2) do |config|
       d.build_args = ["-t=syslog:devel"]
 
       d.name = "syslog"
-      d.volumes = ["/tmp/syslog/dev:/dev"]
+      d.volumes = ["/var/tmp/syslog/dev:/dev"]
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -53,7 +53,7 @@ Vagrant.configure(2) do |config|
       d.build_args = ["-t=exim:devel"]
 
       d.name = "exim"
-      d.volumes = ["/tmp/syslog/dev/log:/dev/log"]
+      d.volumes = ["/var/tmp/syslog/dev/log:/dev/log"]
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -97,7 +97,7 @@ Vagrant.configure(2) do |config|
       d.build_args = ["-t=PROJECT_CODE-mysql:devel"]
 
       d.name = "PROJECT_CODE-mysql"
-      d.volumes = ["/tmp/syslog/dev/log:/dev/log"]
+      d.volumes = ["/var/tmp/syslog/dev/log:/dev/log"]
       d.create_args = ["--volumes-from", "PROJECT_CODE-data-sql"]
 
       d.vagrant_machine = "#{docker_host_name}"
@@ -119,7 +119,7 @@ Vagrant.configure(2) do |config|
       d.link("exim:exim")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/var/tmp/syslog/dev/log:/dev/log"]
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -140,7 +140,7 @@ Vagrant.configure(2) do |config|
       d.link("exim:exim")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/var/tmp/syslog/dev/log:/dev/log"]
 
       d.vagrant_machine = "#{docker_host_name}"
       d.vagrant_vagrantfile = "#{docker_host_vagrantfile}"
@@ -160,7 +160,7 @@ Vagrant.configure(2) do |config|
       d.link("PROJECT_CODE-php-fpm:fpm")
       # We mount drupal folder directly so that we
       # can edit source code in host machine.
-      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/tmp/syslog/dev/log:/dev/log"]
+      d.volumes = ["/vagrant/Docker/drupal/drupal:/var/www/drupal", "/var/tmp/syslog/dev/log:/dev/log"]
       d.ports = ["80:80"]
 
       d.vagrant_machine = "#{docker_host_name}"
