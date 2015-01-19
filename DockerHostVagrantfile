@@ -25,6 +25,7 @@ Vagrant.configure(2) do |config|
 
 $script = <<SCRIPT
 ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
+mkdir -p /var/tmp/syslog/dev
 echo 'DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 --iptables=true --icc=false"' >> /etc/default/docker
 service docker restart
 SCRIPT

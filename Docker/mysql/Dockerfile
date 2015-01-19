@@ -9,6 +9,9 @@ RUN \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
+# Clean up default mysql directory.
+RUN rm -rf /var/lib/mysql/*
+
 # MySQL default configs, suitable for small Drupal site.
 RUN rm /etc/mysql/my.cnf
 COPY etc/mysql/my.cnf /etc/mysql/

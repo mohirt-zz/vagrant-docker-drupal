@@ -1,6 +1,9 @@
 #! /bin/bash
 set -e
 
+# Blank out debian-sys-maint password.
+sed 's/password = .*/password = /g' -i /etc/mysql/debian.cnf
+
 # Initiate DB if not intalled.
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   # Only mysql is allowed to visit her own directory.
@@ -23,6 +26,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
   DELETE FROM mysql.user ;
   CREATE USER 'root'@'%' IDENTIFIED BY '${root_password}' ;
   GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
+  GRANT ALL PRIVILEGES on *.* TO 'debian-sys-maint'@'localhost' IDENTIFIED BY '' WITH GRANT OPTION ;
   DROP DATABASE IF EXISTS test ;
   CREATE DATABASE IF NOT EXISTS \`PROJECT_CODE\` ;
   CREATE USER 'PROJECT_CODE'@'%' IDENTIFIED BY '' ;
