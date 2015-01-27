@@ -7,7 +7,7 @@ The project can be a boilerplate for starting a new Drupal project, or integrati
 In summary, Vagrant will fire up a VM (ubuntu:14.04) and install a Docker daemon. Docker base image (ubuntu:14.04) will be used, and system services like Nginx, PHP-FPM, MySQL will be running inside individual containers. [Data Volume Container](https://docs.docker.com/userguide/dockervolumes/) will be used to hold persistent data.
 
 ## Prerequisite
-- [Vagrant](https://www.vagrantup.com/downloads.html) >= v1.6.0
+- [Vagrant](https://www.vagrantup.com/downloads.html) >= v1.7.2
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 - Vagrant Plugin:
   - [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest)
